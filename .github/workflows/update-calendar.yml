@@ -1,33 +1,35 @@
-name: Daily World Cup 2026 Update
+name: Ежедневное обновление ЧМ-2026
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # Каждый день в 12:00 по МСК
-  workflow_dispatch:
+    - cron: '0 8 * * *'     # Каждый день в 11:00 по Москве
+  workflow_dispatch:        # Можно запускать вручную
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    permissions:
+      contents: write     # Важно! Право на запись
 
-      - name: Setup Python
+    steps:
+      - name: Checkout код
+        uses: actions/checkout@v4
+
+      - name: Установка Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install deps
-        run: pip install icalendar requests beautifulsoup4 lxml
+      - name: Установка библиотек
+        run: pip install icalendar requests beautifulsoup4
 
-      - name: Run updater
-        env:
-          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+      - name: Генерация календаря
         run: python update_calendar.py
 
-      - name: Commit & Push
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add worldcup2026.ics
-          git commit -m "Автообновление: новый анализ и коэффициенты" || echo "No changes"
-          git push
+      - name: Автоматический коммит и push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "♻️ Автообновление календаря ЧМ-2026 • Анализ + Winline + игроки"
+          file_pattern: worldcup2026.ics
+          commit_user_name: "WorldCup Bot"
+          commit_user_email: "bot@github.com"
