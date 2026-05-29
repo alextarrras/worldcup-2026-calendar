@@ -9,7 +9,7 @@ jobs:
   update:
     runs-on: ubuntu-latest
     permissions:
-      contents: write     # Важно! Право на запись
+      contents: write
 
     steps:
       - name: Checkout код
@@ -23,13 +23,13 @@ jobs:
       - name: Установка библиотек
         run: pip install icalendar requests beautifulsoup4
 
-      - name: Генерация календаря
+      - name: Обновление календаря
         run: python update_calendar.py
 
-      - name: Автоматический коммит и push
+      - name: Коммит изменений
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "♻️ Автообновление календаря ЧМ-2026 • Анализ + Winline + игроки"
+          commit_message: "♻️ Автообновление • ЧМ-2026 • Анализ + коэффициенты + игроки"
           file_pattern: worldcup2026.ics
           commit_user_name: "WorldCup Bot"
           commit_user_email: "bot@github.com"
